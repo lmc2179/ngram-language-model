@@ -52,3 +52,23 @@ class AddOneNgramModel(AbstractNGramFrequencyModel):
         adjusted_frequency = self.frequencies[ngram]+1
         adjusted_total = self.total + len(self.frequencies)
         return 1.0*(adjusted_frequency)/adjusted_total
+
+class NGramFrequencyTree(object):
+    def __init__(self, N):
+        self.N = N
+        self.base_ngram_tree = defaultdict(int) #TODO: Consolidate as one data structure with custom node type
+        self.frequency_tree = defaultdict(lambda: defaultdict(int))
+
+    def add_ngram_observation(self, ngram):
+        preceding_elements, last_element = self._partition_ngram(ngram)
+        self.base_ngram_tree[preceding_elements] += 1
+        self.frequency_tree[preceding_elements][last_element] += 1
+
+    def get_ngram_frequency(self, ngram):
+        preceding_elements, last_element = self._partition_ngram(ngram)
+        return self.base_ngram_tree[preceding_elements], self.frequency_tree[preceding_elements][last_element]
+
+    def _partition_ngram(self, ngram):
+        *head, tail = ngram
+        return tuple(head), tail
+
