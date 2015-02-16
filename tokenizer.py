@@ -1,4 +1,7 @@
+import copy
+
 class Tokenizer(object):
+    PUNCTUATION = ',.\'\\";:/?!'
     def __init__(self, delimiter=' '):
         self.delimiter = delimiter
 
@@ -14,4 +17,11 @@ class Tokenizer(object):
         return seq
 
     def _tokenize(self, sequence):
-        return sequence.split(self.delimiter)
+        preprocessed_sequence = self._preprocess_punctuation(sequence)
+        return preprocessed_sequence.split(self.delimiter)
+
+    def _preprocess_punctuation(self, sequence):
+        sequence_copy = copy.deepcopy(sequence)
+        for punctuation_mark in self.PUNCTUATION:
+            sequence_copy = sequence_copy.replace(punctuation_mark, self.delimiter + punctuation_mark)
+        return sequence_copy
