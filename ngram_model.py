@@ -1,5 +1,6 @@
 from collections import defaultdict
 from math import log
+import sampler
 
 class NGramMaker(object):
     def __init__(self, N):
@@ -8,11 +9,17 @@ class NGramMaker(object):
         self.FIRST_CHARACTER_TEMPLATE = '*_{0}'
         self.starting_tokens = [self.FIRST_CHARACTER_TEMPLATE.format(-(N-i)) for i in range(1, N)]
 
+    def get_starting_tokens(self):
+        return self.starting_tokens
+
+    def get_stop_token(self):
+        return self.STOP
+
     def make_ngrams(self, sequence):
         ngrams = []
         augmented_sequence = self.starting_tokens + sequence + [self.STOP]
         starting_point_of_last_ngram = len(augmented_sequence) - (self.N - 1) - 1
-        for i in range(starting_point_of_last_ngram):
+        for i in range(starting_point_of_last_ngram+1):
             ngrams.append(tuple(augmented_sequence[i:i+self.N]))
         return ngrams
 
@@ -46,13 +53,6 @@ class AbstractNGramFrequencyModel(object):
     def _get_ngram_probability(self, ngram):
         raise NotImplementedError
 
-class AddOneNgramModel(AbstractNGramFrequencyModel):
-    def _get_ngram_probability(self, ngram):
-        total, frequency = self.frequency_tree.get_ngram_frequency(ngram)
-        adjusted_frequency = frequency+1
-        adjusted_total = total + self.frequency_tree.get_unique_count()
-        return 1.0*(adjusted_frequency)/adjusted_total
-
 class NGramFrequencyTree(object):
     def __init__(self, N):
         self.N = N
@@ -71,6 +71,16 @@ class NGramFrequencyTree(object):
         preceding_elements, last_element = self._partition_ngram(ngram)
         return self.base_ngram_tree[preceding_elements], self.frequency_tree[preceding_elements][last_element]
 
+    def get_continuation_probability(self, ngram_stem, continuation):
+        base_count, continuation_count = self.get_ngram_frequency(tuple(list(ngram_stem) + [continuation]))
+        return 1.0*continuation_count/base_count
+
+    def get_all_ngram_stems(self):
+        return self.base_ngram_tree.keys()
+
+    def get_all_continuations(self, ngram_stem):
+        return self.frequency_tree[ngram_stem].keys()
+
     def _partition_ngram(self, ngram):
         *head, tail = ngram
         return tuple(head), tail
@@ -78,3 +88,25 @@ class NGramFrequencyTree(object):
     def get_unique_count(self):
         return self.unique_ngram_count
 
+class NGramSampler(object):
+    def __init__(self, sequence_tree, N):
+        self.N = N
+        self.sequence_tree = sequence_tree
+        self.samplers = self._init_samplers(sequence_tree)
+
+    def _init_samplers(self, sequence_tree):
+        return {key:self._build_sampler(sequence_tree, key) for key in sequence_tree.get_all_ngram_stems()}
+
+    def _build_sampler(self, ngram_tree, ngram_stem):
+        ngram_continuations = ngram_tree.get_all_continuations(ngram_stem)
+        probabilities = [ngram_tree.get_continuation_probability(ngram_stem, cont) for cont in ngram_continuations]
+        sampler_obj = sampler.Multinomial_Sampler(probabilities, ngram_continuations)
+        return sampler_obj
+
+    def sample_sequence(self, initial_stem):
+        ngram = initial_stem
+        while ngram[-1] != 'STOP':
+            stem = tuple(ngram[-(self.N-1):])
+            next_char = self.samplers[stem].sample()
+            ngram.append(next_char)
+        return ngram
