@@ -5,6 +5,7 @@ import partition_tree
 import sampler
 import ngram_model
 import tokenizer
+import utilities
 
 class TokenizerTest(unittest.TestCase):
     def test_tokenizer(self):
@@ -77,6 +78,13 @@ class NGramSamplerTest(unittest.TestCase):
     def test_long_sequence(self):
         test_sequences = ['a b c d e f g.']
         assert self.bigram_sample_from_corpus_model(test_sequences) == ['*_-1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', '.', 'STOP']
+
+    def test_utilities_sampler_construction(self):
+        test_sequences = ['a b c d e f g.']
+        N = 2
+        sampler = utilities.build_ngram_sampler_from_sentences(test_sequences, N)
+        sampler.sample_sequence() == ['*_-1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', '.', 'STOP']
+        # sampler.sample_sequence() == 'a b c d e f g .'
 
 if __name__ == '__main__':
     unittest.main()

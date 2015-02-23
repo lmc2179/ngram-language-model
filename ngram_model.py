@@ -90,9 +90,10 @@ class NGramFrequencyTree(object):
         return self.unique_ngram_count
 
 class NGramSampler(object):
-    def __init__(self, sequence_tree):
+    def __init__(self, sequence_tree, default_initial_stem=None):
         self.sequence_tree = sequence_tree
         self.samplers = self._init_samplers(sequence_tree)
+        self.default_initial_stem = default_initial_stem
 
     def _init_samplers(self, sequence_tree):
         return {key:self._build_sampler(sequence_tree, key) for key in sequence_tree.get_all_ngram_stems()}
@@ -103,7 +104,9 @@ class NGramSampler(object):
         sampler_obj = sampler.Multinomial_Sampler(probabilities, ngram_continuations)
         return sampler_obj
 
-    def sample_sequence(self, initial_stem):
+    def sample_sequence(self, initial_stem=None):
+        if not initial_stem:
+            initial_stem = self.default_initial_stem
         ngram = initial_stem
         N = len(initial_stem) + 1
         while ngram[-1] != STOP:
