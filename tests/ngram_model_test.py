@@ -84,7 +84,16 @@ class SampleUtilityTest(unittest.TestCase):
         test_sequences = ['a b c d e f g.']
         N = 2
         sampler = utilities.SentenceSamplerUtility(test_sequences, N)
-        assert sampler.get_sample() == 'a b c d e f g .'
+        assert sampler.get_sample() == 'a b c d e f g.'
+
+    def test_two_sentence_language(self):
+        test_sequences = ['a b c d.', 'e f g.']
+        N = 2
+        sampler = utilities.SentenceSamplerUtility(test_sequences, N)
+        sample = sampler.get_sample()
+        print(sample)
+        assert sample in test_sequences
+
 
 if __name__ == '__main__':
     unittest.main()

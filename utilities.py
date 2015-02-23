@@ -1,6 +1,8 @@
 import tokenizer
 import ngram_model
 
+PUNCTUATION = ',.\'\\";:/?!'
+
 class SentenceSamplerUtility(object):
     def __init__(self, sentences, n):
         ngram_maker = ngram_model.NGramMaker(n)
@@ -10,6 +12,8 @@ class SentenceSamplerUtility(object):
     def get_sample(self):
         sampled_sequence = self.sampler.sample_sequence()
         sampled_sentence = ' '.join(sampled_sequence)
+        for p in PUNCTUATION:
+            sampled_sentence = sampled_sentence.replace(' '+p, p)
         return sampled_sentence
 
 def construct_ngram_tree_from_sentences(sentences, ngram_maker):
