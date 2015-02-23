@@ -1,11 +1,16 @@
 import tokenizer
 import ngram_model
 
-def build_ngram_sampler_from_sentences(sentences, n):
-    ngram_maker = ngram_model.NGramMaker(n)
-    ngram_tree = construct_ngram_tree_from_sentences(sentences, ngram_maker)
-    sampler = ngram_model.NGramSampler(ngram_tree, default_initial_stem=ngram_maker.starting_tokens)
-    return sampler
+class SentenceSamplerUtility(object):
+    def __init__(self, sentences, n):
+        ngram_maker = ngram_model.NGramMaker(n)
+        ngram_tree = construct_ngram_tree_from_sentences(sentences, ngram_maker)
+        self.sampler = ngram_model.NGramSampler(ngram_tree, default_initial_stem=ngram_maker.starting_tokens)
+
+    def get_sample(self):
+        sampled_sequence = self.sampler.sample_sequence()
+        sampled_sentence = ' '.join(sampled_sequence)
+        return sampled_sentence
 
 def construct_ngram_tree_from_sentences(sentences, ngram_maker):
     T = tokenizer.Tokenizer()

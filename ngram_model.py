@@ -104,13 +104,13 @@ class NGramSampler(object):
         sampler_obj = sampler.Multinomial_Sampler(probabilities, ngram_continuations)
         return sampler_obj
 
-    def sample_sequence(self, initial_stem=None):
-        if not initial_stem:
-            initial_stem = self.default_initial_stem
-        ngram = initial_stem
-        N = len(initial_stem) + 1
-        while ngram[-1] != STOP:
-            stem = tuple(ngram[-(N-1):])
+    def sample_sequence(self):
+        import copy
+        sampled_sentence = copy.deepcopy(self.default_initial_stem)
+        N = len(self.default_initial_stem) + 1
+        while sampled_sentence[-1] != STOP:
+            stem = tuple(sampled_sentence[-(N-1):])
             next_char = self.samplers[stem].sample()
-            ngram.append(next_char)
-        return ngram
+            sampled_sentence.append(next_char)
+        trimmed_sampled_sentence = sampled_sentence[len(self.default_initial_stem):-1]
+        return trimmed_sampled_sentence

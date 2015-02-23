@@ -63,28 +63,28 @@ class NGramSamplerTest(unittest.TestCase):
         tokenized_sequences = token.process(test_sequences)
         prepared_sequences = [ngram_maker.make_ngrams(s) for s in tokenized_sequences]
         [sequence_tree.add_ngram_observation(ngram) for sequence in prepared_sequences for ngram in sequence]
-        sampler = ngram_model.NGramSampler(sequence_tree)
-        return sampler.sample_sequence(ngram_maker.starting_tokens)
+        sampler = ngram_model.NGramSampler(sequence_tree, ngram_maker.starting_tokens)
+        return sampler.sample_sequence()
 
 
     def test_single_length_sample(self):
         test_sequences = ['a.', 'a.']
-        assert self.bigram_sample_from_corpus_model(test_sequences)  == ['*_-1', 'a', '.', 'STOP']
+        assert self.bigram_sample_from_corpus_model(test_sequences)  == ['a', '.']
 
     def test_very_unlikely_sample(self):
         test_sequences = ['a.']*10000 + ['b.']
-        assert self.bigram_sample_from_corpus_model(test_sequences)  == ['*_-1', 'a', '.', 'STOP']
+        assert self.bigram_sample_from_corpus_model(test_sequences)  == ['a', '.']
 
     def test_long_sequence(self):
         test_sequences = ['a b c d e f g.']
-        assert self.bigram_sample_from_corpus_model(test_sequences) == ['*_-1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', '.', 'STOP']
+        assert self.bigram_sample_from_corpus_model(test_sequences) == ['a', 'b', 'c', 'd', 'e', 'f', 'g', '.']
 
+class SampleUtilityTest(unittest.TestCase):
     def test_utilities_sampler_construction(self):
         test_sequences = ['a b c d e f g.']
         N = 2
-        sampler = utilities.build_ngram_sampler_from_sentences(test_sequences, N)
-        sampler.sample_sequence() == ['*_-1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', '.', 'STOP']
-        # sampler.sample_sequence() == 'a b c d e f g .'
+        sampler = utilities.SentenceSamplerUtility(test_sequences, N)
+        assert sampler.get_sample() == 'a b c d e f g .'
 
 if __name__ == '__main__':
     unittest.main()
