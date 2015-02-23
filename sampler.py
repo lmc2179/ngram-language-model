@@ -7,8 +7,6 @@ class Multinomial_Sampler(object):
         self.tree = partition_tree.PartitionTree(intervals, event_names)
 
     def _build_intervals_from_probabilities(self, probabilities):
-        if sum(probabilities) != 1.0:
-            raise Exception
         intervals = []
         left_side = 0.0
         for p in probabilities:

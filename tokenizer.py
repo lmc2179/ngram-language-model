@@ -18,6 +18,8 @@ class Tokenizer(object):
 
     def _tokenize(self, sequence):
         preprocessed_sequence = self._preprocess_punctuation(sequence)
+        if preprocessed_sequence[0] == ' ':
+            preprocessed_sequence = preprocessed_sequence[1:]
         return preprocessed_sequence.split(self.delimiter)
 
     def _preprocess_punctuation(self, sequence):
