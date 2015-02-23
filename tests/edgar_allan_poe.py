@@ -16,7 +16,7 @@ class EdgarAllanPoeTest(unittest.TestCase):
         self.run_corpus_trigram_sampling_end_to_end(filename)
 
     def run_corpus_trigram_sampling_end_to_end(self, filename):
-        n=4
+        n=3
         poe_corpus = open(filename)
         poe_document = poe_corpus.read()
         re.sub("\s+"," ",poe_document)
