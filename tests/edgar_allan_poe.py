@@ -1,4 +1,5 @@
 import sys
+sys.setrecursionlimit(10000)
 sys.path.append('..')
 import unittest
 import utilities
@@ -9,13 +10,13 @@ class EdgarAllanPoeTest(unittest.TestCase):
         filename = 'test_corpus/edgar_allan_poe.txt'
         self.run_corpus_trigram_sampling_end_to_end(filename)
 
-    @unittest.skip('Performance issues still need resolving')
+    # @unittest.skip('Performance issues still need resolving')
     def test_corpus_sampling_end_to_end_long(self):
         filename = 'test_corpus/edgar_allan_poe_long.txt'
         self.run_corpus_trigram_sampling_end_to_end(filename)
 
     def run_corpus_trigram_sampling_end_to_end(self, filename):
-        n=3
+        n=4
         poe_corpus = open(filename)
         poe_document = poe_corpus.read()
         re.sub("\s+"," ",poe_document)
