@@ -2,10 +2,12 @@ from collections import defaultdict
 from math import log
 import sampler
 
+STOP = 'STOP'
+
 class NGramMaker(object):
     def __init__(self, N):
         self.N = N
-        self.STOP = 'STOP'
+        self.STOP = STOP
         self.FIRST_CHARACTER_TEMPLATE = '*_{0}'
         self.starting_tokens = [self.FIRST_CHARACTER_TEMPLATE.format(-(N-i)) for i in range(1, N)]
 
@@ -54,8 +56,7 @@ class AbstractNGramFrequencyModel(object):
         raise NotImplementedError
 
 class NGramFrequencyTree(object):
-    def __init__(self, N):
-        self.N = N
+    def __init__(self):
         self.base_ngram_tree = defaultdict(int) #TODO: Consolidate as one data structure with custom node type
         self.frequency_tree = defaultdict(lambda: defaultdict(int))
         self.unique_ngram_count = 0
@@ -89,8 +90,7 @@ class NGramFrequencyTree(object):
         return self.unique_ngram_count
 
 class NGramSampler(object):
-    def __init__(self, sequence_tree, N):
-        self.N = N
+    def __init__(self, sequence_tree):
         self.sequence_tree = sequence_tree
         self.samplers = self._init_samplers(sequence_tree)
 
@@ -105,8 +105,9 @@ class NGramSampler(object):
 
     def sample_sequence(self, initial_stem):
         ngram = initial_stem
-        while ngram[-1] != 'STOP':
-            stem = tuple(ngram[-(self.N-1):])
+        N = len(initial_stem) + 1
+        while ngram[-1] != STOP:
+            stem = tuple(ngram[-(N-1):])
             next_char = self.samplers[stem].sample()
             ngram.append(next_char)
         return ngram

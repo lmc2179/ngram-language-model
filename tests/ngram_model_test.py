@@ -17,7 +17,7 @@ class TokenizerTest(unittest.TestCase):
 class NgramTest(unittest.TestCase):
     def test_frequency_tree(self):
         train_sequences = [['the','dog','runs'],['the','dog','jumps']]
-        unigram_tree = ngram_model.NGramFrequencyTree(N=1)
+        unigram_tree = ngram_model.NGramFrequencyTree()
         for sequence in train_sequences:
             for unigram in sequence:
                 unigram_tree.add_ngram_observation([unigram])
@@ -56,13 +56,13 @@ class MultinomialSampleTest(unittest.TestCase):
 class NGramSamplerTest(unittest.TestCase):
     def bigram_sample_from_corpus_model(self, test_sequences):
         N = 2
-        sequence_tree = ngram_model.NGramFrequencyTree(N)
+        sequence_tree = ngram_model.NGramFrequencyTree()
         token = tokenizer.Tokenizer()
         ngram_maker = ngram_model.NGramMaker(N)
         tokenized_sequences = token.process(test_sequences)
         prepared_sequences = [ngram_maker.make_ngrams(s) for s in tokenized_sequences]
         [sequence_tree.add_ngram_observation(ngram) for sequence in prepared_sequences for ngram in sequence]
-        sampler = ngram_model.NGramSampler(sequence_tree, N)
+        sampler = ngram_model.NGramSampler(sequence_tree)
         return sampler.sample_sequence(ngram_maker.starting_tokens)
 
 
