@@ -19,9 +19,9 @@ class EdgarAllanPoeTest(unittest.TestCase):
         n=3
         poe_corpus = open(filename)
         poe_document = poe_corpus.read()
-        re.sub("\s+"," ",poe_document)
-        transformed_poe = poe_document.replace('\n', ' ').replace('. ', '.\n').replace('! ', '.\n').replace('? ', '.\n').replace('--', ' -- ')
-        poe_sentences = transformed_poe.split('\n')
+        poe_document = poe_document.replace('--', ' -- ')
+        preprocessor = utilities.DocumentPreProcessor()
+        poe_sentences = preprocessor.preprocess(poe_document)
         poe_sentences = [sentence for sentence in poe_sentences if len(sentence.split('n')) > n]
         print('Processing {0} sentences'.format(len(poe_sentences)))
         poe_model = utilities.SentenceSamplerUtility(poe_sentences, n)

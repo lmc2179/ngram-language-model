@@ -1,5 +1,6 @@
 import tokenizer
 import ngram_model
+import re
 
 PUNCTUATION = ',.\'\\";:/?!'
 
@@ -25,3 +26,25 @@ class SentenceSamplerUtility(object):
             sampled_sentence = sampled_sentence.replace(' '+p, p)
         return sampled_sentence
 
+class DocumentPreProcessor(object):
+    END_OF_SENTENCE_CHARS = '?.!'
+
+    def __init__(self):
+        self.preprocess_methods = [self._reduce_whitespace, self._add_line_end_to_punctuation, self.split_on_newline]
+
+    def preprocess(self, document):
+        for preprocess in self.preprocess_methods:
+            document = preprocess(document)
+        return document
+
+    def _add_line_end_to_punctuation(self, document):
+        processed_document = document.replace('\n', ' ')
+        for eos in self.END_OF_SENTENCE_CHARS:
+            processed_document = processed_document.replace(eos+' ', eos+'\n')
+        return processed_document
+
+    def _reduce_whitespace(self, document):
+        return re.sub("\s+"," ", document)
+
+    def split_on_newline(self, document):
+        return document.split('\n')
