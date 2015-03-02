@@ -12,17 +12,20 @@ class PartitionTree(object):
             self._add_interval(interval, self.root)
             self.mapping[interval] = label
 
-    def _add_interval(self, interval, node):
-        if not node.interval:
-            node.interval = interval
-            node.left = PartitionTreeNode()
-            node.right = PartitionTreeNode()
-        elif interval[1] <= node.interval[0]:
-                self._add_interval(interval, node.left)
-        elif interval[0] >= node.interval[1]:
-                self._add_interval(interval, node.right)
-        else:
-            raise Exception
+    def _add_interval(self, interval, starting_node):
+        node = starting_node
+        left, right = interval
+        while node.interval:
+            node_left, node_right = node.interval
+            if right <= node_left:
+                node = node.left
+            elif left >= node_right:
+                node = node.right
+            else:
+                raise Exception('Duplicate interval added to tree')
+        node.interval = interval
+        node.left = PartitionTreeNode()
+        node.right = PartitionTreeNode()
 
     def get_label(self, number):
         interval = self._get_interval(number, self.root)
