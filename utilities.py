@@ -29,8 +29,13 @@ class SentenceSamplerUtility(object):
 class DocumentPreProcessor(object):
     END_OF_SENTENCE_CHARS = '?.!'
 
-    def __init__(self):
-        self.preprocess_methods = [self._reduce_whitespace, self._add_line_end_to_punctuation, self.split_on_newline]
+    def __init__(self, reduce_whitespace=True, add_line_end_to_punctuation=True):
+        self.preprocess_methods = []
+        if reduce_whitespace:
+            self.preprocess_methods.append(self._reduce_whitespace)
+        if add_line_end_to_punctuation:
+            self.preprocess_methods.append(self._add_line_end_to_punctuation)
+        self.preprocess_methods.append(self.split_on_newline)
 
     def preprocess(self, document):
         for preprocess in self.preprocess_methods:
