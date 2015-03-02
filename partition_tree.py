@@ -5,6 +5,7 @@ class PartitionTreeNode(object):
         self.interval = interval
 
 class PartitionTree(object):
+    #TODO: This should be a self-balancing tree
     def __init__(self, intervals, labels):
         self.mapping = {}
         self.root = PartitionTreeNode()
@@ -33,9 +34,10 @@ class PartitionTree(object):
 
     def _get_interval(self, number, node):
         left_bound, right_bound = node.interval
-        if number < left_bound:
-            return self._get_interval(number, node.left)
-        elif number > right_bound:
-            return self._get_interval(number, node.right)
-        else:
-            return node.interval
+        while number < left_bound or number > right_bound:
+            if number < left_bound:
+                node = node.left
+            elif number > right_bound:
+                node = node.right
+            left_bound, right_bound = node.interval
+        return node.interval

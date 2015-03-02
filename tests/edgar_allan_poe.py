@@ -1,5 +1,4 @@
 import sys
-sys.setrecursionlimit(10000)
 sys.path.append('..')
 import unittest
 import utilities

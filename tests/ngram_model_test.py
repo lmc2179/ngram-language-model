@@ -45,7 +45,7 @@ class MultinomialSampleTest(unittest.TestCase):
         event_names = ['Heads', 'Tails']
         s = sampler.Multinomial_Sampler(P, event_names)
         from collections import Counter
-        total_samples = 400000
+        total_samples = 1000000
         sample_counter = Counter([s.sample() for i in range(total_samples)])
         allowed_error = 0.001
         head_frequency = 1.0*sample_counter['Heads']/total_samples
