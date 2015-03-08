@@ -30,7 +30,7 @@ class NgramTest(unittest.TestCase):
         sequence_total, sequence_count = tree.get_ngram_frequency(sequence)
         assert sequence_total == expected_total and sequence_count == expected_sequence_count
 
-class PartitionTreeTrest(unittest.TestCase):
+class PartitionTreeTest(unittest.TestCase):
     def test_partition_tree(self):
         tree = partition_tree.PartitionTree([(0.0,0.5),(0.5,1.0)],['A', 'B'])
         values = [0.0, 0.3, 0.5, 0.7, 1.0]

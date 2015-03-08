@@ -31,7 +31,7 @@ class AbstractNGramFrequencyModel(object):
     def __init__(self, N):
         self.N = N
         self.ngram_maker = NGramMaker(N)
-        self.frequency_tree = NGramFrequencyTree(N)
+        self.frequency_tree = NGramFrequencyTree()
 
     def fit(self, sequences):
         for sequence in sequences:
