@@ -1,7 +1,16 @@
 # ngram-language-model
-An implementation of a HMM Ngram language model.
+An implementation of a HMM Ngram language model in python.
 
 Currently implements basic NGram analysis, and provides an interface to create samplers from your favorite corpus.
+
+Use run_sampling_from_corpus.py to create samples trained on a corpus in a text file.
+
+For more info about the input arguments, type
+```
+run_sampling_from_corpus.py -h
+```
+
+For more control, you can import the SentenceSamplerUtility class from the utilities module, which provides a convenient wrapper around the mechanics of sampler construction.
 
 -------------------------------------------------------
 
