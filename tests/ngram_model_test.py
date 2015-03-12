@@ -16,10 +16,11 @@ class TokenizerTest(unittest.TestCase):
         assert T.process(test_strings) == tokenized_strings
 
 class NgramTest(unittest.TestCase):
+    train_sequences = [['the','dog','runs'],['the','dog','jumps']]
+
     def test_frequency_tree(self):
-        train_sequences = [['the','dog','runs'],['the','dog','jumps']]
         unigram_tree = ngram_model.NGramFrequencyTree()
-        for sequence in train_sequences:
+        for sequence in self.train_sequences:
             for unigram in sequence:
                 unigram_tree.add_ngram_observation([unigram])
         assert set(unigram_tree.get_all_continuations(())) == {'the', 'dog','runs', 'jumps'}
@@ -29,6 +30,12 @@ class NgramTest(unittest.TestCase):
     def _assert_ngram_frequency(self, tree, sequence, expected_total, expected_sequence_count):
         sequence_total, sequence_count = tree.get_ngram_frequency(sequence)
         assert sequence_total == expected_total and sequence_count == expected_sequence_count
+
+    def test_train_additive_trigram_model(self):
+        model = ngram_model.MLEModel(3)
+        model.fit(self.train_sequences)
+        for seq in self.train_sequences + [['the', 'dog', 'dog']]:
+            print(seq, model.predict([seq]))
 
 class PartitionTreeTest(unittest.TestCase):
     def test_partition_tree(self):

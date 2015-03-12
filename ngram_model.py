@@ -50,10 +50,24 @@ class AbstractNGramFrequencyModel(object):
         return self.ngram_maker.make_ngrams(sequence)
 
     def _get_ngram_log_probability(self, ngram):
-        return log(self._get_ngram_probability(ngram))
+        raw_prob = self._get_ngram_probability(ngram)
+        return log(raw_prob)
 
     def _get_ngram_probability(self, ngram):
         raise NotImplementedError
+
+class MLEModel(AbstractNGramFrequencyModel):
+    def _get_ngram_probability(self, ngram):
+        context_count, tail_count = self.frequency_tree.get_ngram_frequency(ngram)
+        if not context_count or not tail_count:
+            return 1e-20
+        return tail_count/context_count
+
+class AdditiveSmoothingModel(AbstractNGramFrequencyModel):
+    def _get_ngram_probability(self, ngram):
+        context_count, tail_count = self.frequency_tree.get_ngram_frequency(ngram)
+        ngram_count = self.frequency_tree.get_unique_count()
+        return (tail_count+1)/(context_count+ngram_count)
 
 class NGramFrequencyTree(object):
     def __init__(self):
